@@ -86,17 +86,20 @@ if (values.version) {
 
 // Check transport mode
 const useStdio = values.stdio || false
-const port = Number.parseInt((values.port as string) || process.env.PORT || "3331")
+const port = Number.parseInt((values.port as string) || process.env.PORT || "3331", 10)
 
 // Configuration from command line and environment variables
 const cacheTtl = Number.parseInt(
-	(values["cache-ttl"] as string) || process.env.CACHE_TTL || "3600000"
+	(values["cache-ttl"] as string) || process.env.CACHE_TTL || "3600000",
+	10
 )
 const maxCacheSize = Number.parseInt(
-	(values["max-cache-size"] as string) || process.env.MAX_CACHE_SIZE || "100"
+	(values["max-cache-size"] as string) || process.env.MAX_CACHE_SIZE || "100",
+	10
 )
 const requestTimeout = Number.parseInt(
-	(values["request-timeout"] as string) || process.env.REQUEST_TIMEOUT || "30000"
+	(values["request-timeout"] as string) || process.env.REQUEST_TIMEOUT || "30000",
+	10
 )
 const dbPath = (values["db-path"] as string) || process.env.DB_PATH
 

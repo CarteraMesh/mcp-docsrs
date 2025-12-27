@@ -239,9 +239,7 @@ if (import.meta.main) {
 	const args = process.argv.slice(2)
 
 	if (args.length < 2) {
-		console.error(
-			"Usage: bun test/integration/test-binary.ts <executable> <target> [--windows]"
-		)
+		console.error("Usage: bun test/integration/test-binary.ts <executable> <target> [--windows]")
 		process.exit(1)
 	}
 

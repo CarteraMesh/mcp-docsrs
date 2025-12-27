@@ -204,8 +204,8 @@ export const createRustDocsServer = (config: ServerConfig = {}) => {
 		}),
 		(uri, args) => {
 			try {
-				const limit = args.limit ? Number.parseInt(args.limit as string) : 100
-				const offset = args.offset ? Number.parseInt(args.offset as string) : 0
+				const limit = args.limit ? Number.parseInt(args.limit as string, 10) : 100
+				const offset = args.offset ? Number.parseInt(args.offset as string, 10) : 0
 				const entries = handlers.getCacheEntries(limit, offset)
 				return {
 					contents: [
