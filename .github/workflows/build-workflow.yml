@@ -4,15 +4,13 @@ on:
   workflow_call:
 
 env:
-  BUN_VERSION: '1.2.14'
-
+  BUN_VERSION: 'latest'
 
 jobs:
   build:
     name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60  # Extended timeout for ARM64 runner availability
-    # Limit ARM64 concurrency to help with runner availability
+    timeout-minutes: 15
     concurrency:
       group: arm64-${{ matrix.target }}-${{ github.ref }}
       cancel-in-progress: false
@@ -21,33 +19,25 @@ jobs:
       matrix:
         include:
           # Linux x64 GLIBC builds
-          - os: ubuntu-latest
-            target: linux-x64
-            build-cmd: bun run build:linux-x64
+          # - os: ${{ vars.RUNNER }}
+          #   target: linux-x64
+          #   build-cmd: bun run build:linux-x64
           # Linux ARM64 GLIBC builds (native ARM64 runner)
-          - os: ubuntu-24.04-arm
+          - os: ${{ vars.RUNNER }}
             target: linux-arm64
             build-cmd: bun run build:linux-arm64
-          # Linux x64 MUSL builds (for Alpine, containers, static linking)
-          - os: ubuntu-latest
-            target: linux-x64-musl
-            build-cmd: bun run build:linux-x64-musl
-          # Linux ARM64 MUSL builds (native ARM64 runner)
-          - os: ubuntu-24.04-arm
-            target: linux-arm64-musl
-            build-cmd: bun run build:linux-arm64-musl
-          # macOS x64 builds (Intel-based runner)
-          - os: macos-13
-            target: darwin-x64
-            build-cmd: bun run build:darwin-x64
-          # macOS ARM64 builds (Apple Silicon runner - latest)
-          - os: macos-latest
-            target: darwin-arm64
-            build-cmd: bun run build:darwin-arm64
-          # Windows build
-          - os: windows-latest
-            target: windows-x64
-            build-cmd: bun run build:windows-x64
+          # # macOS x64 builds (Intel-based runner)
+          # - os: macos-13
+          #   target: darwin-x64
+          #   build-cmd: bun run build:darwin-x64
+          # # macOS ARM64 builds (Apple Silicon runner - latest)
+          # - os: macos-latest
+          #   target: darwin-arm64
+          #   build-cmd: bun run build:darwin-arm64
+          # # Windows build
+          # - os: windows-latest
+          #   target: windows-x64
+          #   build-cmd: bun run build:windows-x64
 
     steps:
       - name: Show runner info
@@ -62,16 +52,16 @@ jobs:
         shell: bash
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: ${{ env.BUN_VERSION }}
-          no-cache: ${{ runner.os == 'Windows' }}  # Disable cache on Windows due to issues
+          no-cache: ${{ runner.os == 'Windows' }} # Disable cache on Windows due to issues
 
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: ubicloud/cache@v4
         with:
           path: |
             ~/.bun/install/cache
@@ -86,7 +76,6 @@ jobs:
 
       - name: Build executable
         run: ${{ matrix.build-cmd }}
-
 
       - name: Test executable
         run: |
@@ -109,18 +98,7 @@ jobs:
           else
             # Test binaries on their native architecture
             if [[ "${{ matrix.os }}" == "ubuntu-"* ]] && [[ "${{ matrix.target }}" == *"linux"* ]]; then
-              # Test MUSL binaries in Alpine container
-              if [[ "${{ matrix.target }}" == *"musl"* ]]; then
-                # Make binary executable before mounting
-                chmod +x ./dist/mcp-docsrs-${{ matrix.target }}
-                # IMPORTANT: Bun's MUSL builds are NOT fully static - they dynamically link libstdc++
-                # This is a known limitation: https://github.com/oven-sh/bun/issues/16056
-                # Test using oven/bun:alpine which has all necessary libraries
-                docker run --rm -v $PWD/dist:/workspace:ro -w /workspace oven/bun:alpine /workspace/mcp-docsrs-${{ matrix.target }} --version
-              else
-                # Test GLIBC binaries directly
                 ./dist/mcp-docsrs-${{ matrix.target }} --version
-              fi
             elif [[ "${{ matrix.os }}" == "macos-"* ]] && [[ "${{ matrix.target }}" == *"darwin"* ]]; then
               # Test on native architecture (no Rosetta)
               ./dist/mcp-docsrs-${{ matrix.target }} --version
@@ -137,7 +115,7 @@ jobs:
           if [[ "${{ matrix.os }}" == "ubuntu-24.04-arm" ]] && [[ "${{ matrix.target }}" == *"arm64"* ]]; then
             echo "Running tests on native ARM64..."
             bun test
-          elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]] && [[ "${{ matrix.target }}" == "linux-x64" ]]; then
+          elif [[ "${{ matrix.os }}" == "${{ vars.RUNNER }}" ]] && [[ "${{ matrix.target }}" == "linux-x64" ]]; then
             echo "Running tests on native x64..."
             bun test
           elif [[ "${{ matrix.os }}" == "macos-"* ]] && [[ "${{ matrix.target }}" == "darwin-"* ]]; then
@@ -171,4 +149,4 @@ jobs:
           name: mcp-docsrs-${{ matrix.target }}
           path: |
             dist/mcp-docsrs-${{ matrix.target }}*
-          retention-days: 30
+          retention-days: 3

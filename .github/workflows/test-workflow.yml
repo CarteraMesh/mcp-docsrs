@@ -9,9 +9,6 @@ on:
         default: false
         type: boolean
 
-env:
-  BUN_VERSION: '1.2.14'
-
 jobs:
   test:
     name: Test on ${{ matrix.os }} (Bun ${{ matrix.bun-version }})
@@ -19,12 +16,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        bun-version: ['1.2.14', 'latest']
+        os:
+          - ${{ vars.RUNNER }}
+        bun-version: ['latest']
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -32,10 +30,10 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: ${{ matrix.bun-version }}
-          no-cache: ${{ runner.os == 'Windows' }}  # Disable cache on Windows due to issues
+          no-cache: ${{ runner.os == 'Windows' }} # Disable cache on Windows due to issues
 
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: ubicloud/cache@v4
         with:
           path: |
             ~/.bun/install/cache
@@ -50,18 +48,13 @@ jobs:
 
       - name: Run linter
         run: bun run lint
-        if: matrix.os == 'ubuntu-latest' && matrix.bun-version == '1.2.14'
-
       - name: Run type check
         run: bun run typecheck
-
       - name: Run tests
         run: bun test --coverage
         env:
           LOG_EXPECTED_ERRORS: ${{ inputs.debug_enabled }}
-
       - name: Upload coverage reports
-        if: matrix.os == 'ubuntu-latest' && matrix.bun-version == '1.2.14'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
