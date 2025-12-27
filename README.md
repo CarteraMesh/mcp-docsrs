@@ -32,7 +32,7 @@ bun run build:bytecode # or bun run build:all for all platforms
 
 ### Using Pre-built Executables
 
-Download the latest release for your platform from the [Releases](https://github.com/vexxvakan/mcp-docsrs/releases) page:
+Download the latest release for your platform from the [Releases](https://github.com/cateramesh/mcp-docsrs/releases) page:
 
 #### Linux
 
@@ -54,13 +54,13 @@ Pull and run the latest multi-arch image (supports both x64 and ARM64):
 
 ```bash
 # Pull the latest image
-docker pull ghcr.io/vexxvakan/mcp-docsrs:latest
+docker pull ghcr.io/cateramesh/mcp-docsrs:latest
 
 # Run the server
-docker run --rm -i ghcr.io/vexxvakan/mcp-docsrs:latest
+docker run --rm -i ghcr.io/cateramesh/mcp-docsrs:latest
 
 # Run with custom configuration
-docker run --rm -i ghcr.io/vexxvakan/mcp-docsrs:latest \
+docker run --rm -i ghcr.io/cateramesh/mcp-docsrs:latest \
   --cache-ttl 7200000 --max-cache-size 200
 ```
 
@@ -307,7 +307,7 @@ Or using Docker:
   "mcpServers": {
     "rust-docs": {
       "command": "docker",
-      "args": ["run", "--rm", "-i", "ghcr.io/vexxvakan/mcp-docsrs:latest"]
+      "args": ["run", "--rm", "-i", "ghcr.io/cateramesh/mcp-docsrs:latest"]
     }
   }
 }
@@ -424,7 +424,7 @@ To see full error details for debugging, set `LOG_EXPECTED_ERRORS=true`.
 ```text
 mcp-docsrs/
 ├── src/                        # Source code
-│   ├── cli.ts                  # CLI entry point with argument parsing
+│   ├── index.ts                  # CLI entry point with argument parsing
 │   ├── index.ts                # MCP server entry point
 │   ├── server.ts               # MCP server implementation with tool/resource handlers
 │   ├── cache.ts                # LRU cache with SQLite persistence

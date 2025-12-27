@@ -11,7 +11,7 @@ jobs:
   build:
     name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60 # Extended timeout for ARM64 runner availability
+    timeout-minutes: 15
     # Limit ARM64 concurrency to help with runner availability
     concurrency:
       group: arm64-${{ matrix.target }}-${{ github.ref }}
@@ -63,7 +63,7 @@ jobs:
           no-cache: ${{ runner.os == 'Windows' }} # Disable cache on Windows due to issues
 
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: ubicloud/cache@v4
         with:
           path: |
             ~/.bun/install/cache
