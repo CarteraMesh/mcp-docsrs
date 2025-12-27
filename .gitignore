@@ -1,0 +1,22 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+.env
+.env.local
+*.sqlite
+*.sqlite3
+*.db
+
+# Act testing
+.secrets
+event.json
+event-*.json
+.github/workflows/*-test.yml
+
+# Test artifacts
+test-artifacts/
+
+# Test scripts - exclude test-musl.sh from being ignored
+test-*.sh
+!test/integration/test-musl.sh
