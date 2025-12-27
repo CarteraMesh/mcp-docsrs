@@ -2,10 +2,8 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    types: [ labeled ]
-    # Only run when "full-ci" label is added
   workflow_dispatch:
     inputs:
       debug_enabled:
@@ -42,7 +40,7 @@ jobs:
     name: Integration
     needs: build
     if: |
-      github.event_name == 'push' || 
+      github.event_name == 'push' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'full-ci'))
     uses: ./.github/workflows/integration-test-workflow.yml
@@ -50,7 +48,7 @@ jobs:
 
   status-check:
     name: CI Status Check
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER }}
     needs: [test, build, code-quality, integration-test]
     if: always()
 
@@ -59,27 +57,27 @@ jobs:
         run: |
           # Check all job results
           FAILED=false
-          
+
           if [ "${{ needs.test.result }}" != "success" ] && [ "${{ needs.test.result }}" != "skipped" ]; then
             echo "❌ Test failed: ${{ needs.test.result }}"
             FAILED=true
           fi
-          
+
           if [ "${{ needs.build.result }}" != "success" ] && [ "${{ needs.build.result }}" != "skipped" ]; then
             echo "❌ Build failed: ${{ needs.build.result }}"
             FAILED=true
           fi
-          
+
           if [ "${{ needs.code-quality.result }}" != "success" ] && [ "${{ needs.code-quality.result }}" != "skipped" ]; then
             echo "❌ Code Quality failed: ${{ needs.code-quality.result }}"
             FAILED=true
           fi
-          
+
           if [ "${{ needs.integration-test.result }}" != "success" ] && [ "${{ needs.integration-test.result }}" != "skipped" ]; then
             echo "❌ Integration Test failed: ${{ needs.integration-test.result }}"
             FAILED=true
           fi
-          
+
           if [ "$FAILED" = "true" ]; then
             echo "❌ CI pipeline failed"
             exit 1

@@ -4,16 +4,15 @@ on:
   workflow_call:
 
 env:
-  BUN_VERSION: '1.2.14'
-
+  BUN_VERSION: 'latest'
 jobs:
   quality:
     name: Code Quality Checks
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2

@@ -17,7 +17,7 @@ permissions:
 jobs:
   auto-label:
     name: Auto Label
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER }}
     if: github.event_name == 'pull_request'
 
     steps:
@@ -86,7 +86,7 @@ jobs:
   # This prevents spam on every PR
   welcome-first-time:
     name: Welcome First Time Contributors
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER }}
     if: |
       github.event_name == 'pull_request' &&
       github.event.action == 'opened' &&
@@ -108,7 +108,7 @@ jobs:
 
   stale-check:
     name: Mark Stale Items
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER }}
     if: github.event_name == 'schedule'
 
     steps:
