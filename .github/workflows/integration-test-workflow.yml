@@ -2,8 +2,6 @@ name: Integration Tests
 
 on:
   workflow_call:
-  pull_request:
-
 env:
   BUN_VERSION: 'latest'
 

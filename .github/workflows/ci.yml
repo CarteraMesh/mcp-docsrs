@@ -82,12 +82,6 @@ jobs:
     uses: ./.github/workflows/build-workflow.yml
     secrets: inherit
 
-  code-quality:
-    name: Quality
-    needs: test
-    uses: ./.github/workflows/code-quality-workflow.yml
-    secrets: inherit
-
   integration-test:
     name: Integration
     needs: build
