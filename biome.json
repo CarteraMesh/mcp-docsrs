@@ -21,8 +21,8 @@
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab",
-		"indentWidth": 3
+		"indentStyle": "space",
+		"indentWidth": 2
 	},
 	"assist": {
 		"actions": {
@@ -95,8 +95,8 @@
 			"quoteProperties": "asNeeded",
 			"enabled": true,
 			"attributePosition": "auto",
-			"indentWidth": 3,
-			"indentStyle": "tab",
+			"indentWidth": 2,
+			"indentStyle": "space",
 			"jsxQuoteStyle": "double",
 			"lineEnding": "lf",
 			"lineWidth": 100

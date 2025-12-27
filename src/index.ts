@@ -6,23 +6,23 @@ import type { ServerConfig } from "./types.js"
 
 // Parse command line arguments
 const { values, positionals } = parseArgs({
-	args: process.argv.slice(2),
-	options: {
-		help: { type: "boolean", short: "h" },
-		version: { type: "boolean", short: "v" },
-		port: { type: "string" },
-		stdio: { type: "boolean" },
-		"cache-ttl": { type: "string" },
-		"max-cache-size": { type: "string" },
-		"request-timeout": { type: "string" },
-		"db-path": { type: "string" }
-	},
-	allowPositionals: true
+  args: process.argv.slice(2),
+  options: {
+    help: { type: "boolean", short: "h" },
+    version: { type: "boolean", short: "v" },
+    port: { type: "string" },
+    stdio: { type: "boolean" },
+    "cache-ttl": { type: "string" },
+    "max-cache-size": { type: "string" },
+    "request-timeout": { type: "string" },
+    "db-path": { type: "string" }
+  },
+  allowPositionals: true
 })
 
 // Show help if requested
 if (values.help || positionals.includes("help")) {
-	console.log(`
+  console.log(`
 MCP Rust Docs Server
 
 A Model Context Protocol server for fetching Rust crate documentation from docs.rs
@@ -74,14 +74,14 @@ MCP Integration:
     }
   }
 `)
-	process.exit(0)
+  process.exit(0)
 }
 
 // Show version if requested
 if (values.version) {
-	const packageJson = require("../package.json")
-	console.log(`mcp-docsrs v${packageJson.version}`)
-	process.exit(0)
+  const packageJson = require("../package.json")
+  console.log(`mcp-docsrs v${packageJson.version}`)
+  process.exit(0)
 }
 
 // Check transport mode
@@ -90,59 +90,59 @@ const port = Number.parseInt((values.port as string) || process.env.PORT || "333
 
 // Configuration from command line and environment variables
 const cacheTtl = Number.parseInt(
-	(values["cache-ttl"] as string) || process.env.CACHE_TTL || "3600000",
-	10
+  (values["cache-ttl"] as string) || process.env.CACHE_TTL || "3600000",
+  10
 )
 const maxCacheSize = Number.parseInt(
-	(values["max-cache-size"] as string) || process.env.MAX_CACHE_SIZE || "100",
-	10
+  (values["max-cache-size"] as string) || process.env.MAX_CACHE_SIZE || "100",
+  10
 )
 const requestTimeout = Number.parseInt(
-	(values["request-timeout"] as string) || process.env.REQUEST_TIMEOUT || "30000",
-	10
+  (values["request-timeout"] as string) || process.env.REQUEST_TIMEOUT || "30000",
+  10
 )
 const dbPath = (values["db-path"] as string) || process.env.DB_PATH
 
 // Validate configuration
 if (!useStdio && (Number.isNaN(port) || port <= 0 || port > 65535)) {
-	console.error("Error: Invalid port value")
-	process.exit(1)
+  console.error("Error: Invalid port value")
+  process.exit(1)
 }
 
 if (Number.isNaN(cacheTtl) || cacheTtl <= 0) {
-	console.error("Error: Invalid cache TTL value")
-	process.exit(1)
+  console.error("Error: Invalid cache TTL value")
+  process.exit(1)
 }
 
 if (Number.isNaN(maxCacheSize) || maxCacheSize <= 0) {
-	console.error("Error: Invalid max cache size value")
-	process.exit(1)
+  console.error("Error: Invalid max cache size value")
+  process.exit(1)
 }
 
 if (Number.isNaN(requestTimeout) || requestTimeout <= 0) {
-	console.error("Error: Invalid request timeout value")
-	process.exit(1)
+  console.error("Error: Invalid request timeout value")
+  process.exit(1)
 }
 
 // Create config object after validation
 const config: ServerConfig = {
-	cacheTtl,
-	maxCacheSize,
-	requestTimeout,
-	dbPath,
-	port: useStdio ? undefined : port,
-	useStdio
+  cacheTtl,
+  maxCacheSize,
+  requestTimeout,
+  dbPath,
+  port: useStdio ? undefined : port,
+  useStdio
 }
 
 // Error handling
 process.on("uncaughtException", (error) => {
-	console.error("Uncaught exception:", error)
-	process.exit(1)
+  console.error("Uncaught exception:", error)
+  process.exit(1)
 })
 
 process.on("unhandledRejection", (reason, promise) => {
-	console.error("Unhandled rejection at:", promise, "reason:", reason)
-	process.exit(1)
+  console.error("Unhandled rejection at:", promise, "reason:", reason)
+  process.exit(1)
 })
 
 // Create and start server
@@ -150,20 +150,20 @@ const { start, cleanup } = createRustDocsServer(config)
 
 // Handle graceful shutdown
 process.on("SIGINT", () => {
-	console.error("\nShutting down gracefully...")
-	cleanup()
-	process.exit(0)
+  console.error("\nShutting down gracefully...")
+  cleanup()
+  process.exit(0)
 })
 
 process.on("SIGTERM", () => {
-	console.error("\nShutting down gracefully...")
-	cleanup()
-	process.exit(0)
+  console.error("\nShutting down gracefully...")
+  cleanup()
+  process.exit(0)
 })
 
 // Start the server
 start().catch((error) => {
-	console.error("Failed to start MCP server:", error)
-	cleanup()
-	process.exit(1)
+  console.error("Failed to start MCP server:", error)
+  cleanup()
+  process.exit(1)
 })

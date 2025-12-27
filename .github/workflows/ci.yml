@@ -65,12 +65,9 @@ jobs:
           echo "- **Type Check**: ${{ steps.typecheck.outcome }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Tests**: ${{ steps.tests.outcome }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Build**: ${{ steps.build.outcome }}" >> $GITHUB_STEP_SUMMARY
+
   test:
     name: Test Suite
-    if: |
-      github.event_name == 'push' ||
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'full-ci'))
     uses: ./.github/workflows/test-workflow.yml
     secrets: inherit
     with:
@@ -78,16 +75,11 @@ jobs:
 
   build:
     name: Build
-    needs: test
     uses: ./.github/workflows/build-workflow.yml
     secrets: inherit
 
   integration-test:
     name: Integration
     needs: build
-    if: |
-      github.event_name == 'push' ||
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'full-ci'))
     uses: ./.github/workflows/integration-test-workflow.yml
     secrets: inherit
